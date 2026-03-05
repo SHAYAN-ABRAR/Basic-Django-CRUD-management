@@ -5,13 +5,6 @@
 <div class="mt-4">
     <div class="d-flex justify-content-between align-items-center">
         <h2>Employee Records</h2>
-        <div>
-            <span>Welcome, <strong>{{ user.username }}</strong>!</span>
-            <form action="{% url 'logout' %}" method="post" style="display:inline; margin-left: 10px;">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-sm btn-outline-danger">Logout</button>
-            </form>
-        </div>
     </div>
     <hr>
     <a href="{% url 'create_view' %}" class="btn btn-primary mb-3">Add New Employee</a>
@@ -33,11 +26,69 @@
                 <td>{{ emp.emp_dept }}</td>
                 <td>
                     <a href="{% url 'update_view' emp.id %}" class="btn btn-sm btn-warning">Edit</a>
-                    <a href="{% url 'delete_emp' emp.id %}" class="btn btn-sm btn-danger">Delete</a>
+
+                    <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
+                        data-target="#deleteModal{{ emp.id }}">
+                        Delete
+                    </button>
+
+                    <div class="modal fade" id="deleteModal{{ emp.id }}" tabindex="-1"
+                        aria-labelledby="deleteModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body text-center py-4">
+                                    <i class="fas fa-exclamation-triangle text-warning fa-3x mb-3"></i>
+                                    <h4>Are you sure?</h4>
+                                    <p class="text-muted">You are about to delete <strong>{{ emp.emp_name }}</strong>
+                                        ({{ emp.emp_id }}). This action cannot be undone.</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <a href="{% url 'delete_emp' emp.id %}" class="btn btn-danger">Confirm Delete</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if employee.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1{% if query %}&search={{ query }}{% endif %}">&laquo; First</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link"
+                    href="?page={{ employee.previous_page_number }}{% if query %}&search={{ query }}{% endif %}">Previous</a>
+            </li>
+            {% endif %}
+
+            <li class="page-item disabled">
+                <span class="page-link">Page {{ employee.number }} of {{ employee.paginator.num_pages }}</span>
+            </li>
+
+            {% if employee.has_next %}
+            <li class="page-item">
+                <a class="page-link"
+                    href="?page={{ employee.next_page_number }}{% if query %}&search={{ query }}{% endif %}">Next</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link"
+                    href="?page={{ employee.paginator.num_pages }}{% if query %}&search={{ query }}{% endif %}">Last
+                    &raquo;</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
 </div>
 {% endblock %}
