@@ -57,3 +57,17 @@ def edit_salary(request, pk):
         'salary': salary,
         'employees': employees
     })
+
+
+@login_required(login_url='login')
+def delete_salary(request, pk):
+    # Fetch the specific salary record
+    salary = get_object_or_404(Salary, pk=pk)
+    
+    if request.method == 'POST':
+        employee_name = salary.employee.emp_name
+        salary.delete()
+        messages.warning(request, f"Salary record for {employee_name} has been deleted.")
+        return redirect('payroll_home')
+        
+    return redirect('payroll_home')

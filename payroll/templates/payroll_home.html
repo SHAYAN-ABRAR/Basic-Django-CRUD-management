@@ -6,28 +6,65 @@
     <h2>Payroll Records</h2>
     <hr>
     <a href="{% url 'add_salary' %}" class="btn btn-primary mb-3">Process New Salary</a>
-    <table class="table table-hover">
-    <thead class="thead-dark">
-        <tr>
-            <th>Name</th>
-            <th>Amount</th>
-            <th>Bonus</th>
-            <th>Date</th>
-            <th>Actions</th> </tr>
-    </thead>
-    <tbody>
-        {% for s in salaries %}
-        <tr>
-            <td>{{ s.employee.emp_name }}</td>
-            <td>{{ s.amount }}</td>
-            <td>{{ s.bonus }}</td>
-            <td>{{ s.pay_date }}</td>
-            <td>
-                <a href="{% url 'edit_salary' s.pk %}" class="btn btn-warning btn-sm">Edit</a>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+
+
+
+    <table class="table table-hover mt-3">
+        <thead class="thead-dark">
+            <tr>
+                <th>Name</th>
+                <th>Amount</th>
+                <th>Bonus</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in salaries %}
+            <tr>
+                <td>{{ s.employee.emp_name }}</td>
+                <td>{{ s.amount }}</td>
+                <td>{{ s.bonus }}</td>
+                <td>{{ s.pay_date }}</td>
+                <td>
+                    <a href="{% url 'edit_salary' s.pk %}" class="btn btn-warning btn-sm">Edit</a>
+
+                    <button type="button" class="btn btn-danger btn-sm" data-toggle="modal"
+                        data-target="#deleteModal{{ s.pk }}">
+                        Delete
+                    </button>
+
+                    <div class="modal fade" id="deleteModal{{ s.pk }}" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Confirm Deletion</h5>
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Are you sure you want to delete the payment record for
+                                        <strong>{{s.employee.emp_name}}</strong> on {{s.pay_date}}?</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <form action="{% url 'delete_salary' s.pk %}" method="POST" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger">Confirm Delete</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center">No payroll records found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+
 </div>
 {% endblock %}
